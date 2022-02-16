@@ -4,7 +4,7 @@ use std::{
       TypeId,
   }
 };
-use ggez::Context;
+use ggez::{Context, GameResult};
 
 use crate::{
   entity::EntitySystem,
@@ -13,6 +13,7 @@ use crate::{
 
 pub trait System {
   fn update(&mut self, ctx: &mut Context, entities: usize, component_manager: &mut ComponentManager);
+  fn draw(&self, ctx: &mut Context, entities: usize, component_manager: &ComponentManager) -> GameResult;
 }
 
 pub struct SystemManager {
@@ -42,5 +43,13 @@ impl SystemManager {
     for (_, system) in &mut self.systems {
       system.update(ctx, self.entity_system.entities, component_manager);
     }
+  }
+
+  pub fn draw(&self, ctx: &mut Context, component_manager: &ComponentManager) -> GameResult {
+    for (_, system) in &self.systems {
+      system.draw(ctx, self.entity_system.entities, component_manager)?;
+    }
+
+    Ok(())
   }
 }

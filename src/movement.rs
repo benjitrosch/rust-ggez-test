@@ -1,4 +1,4 @@
-use ggez::{Context, input::keyboard, event::KeyCode};
+use ggez::{Context, input::keyboard, event::KeyCode, GameResult};
 
 use crate::{
     system::System,
@@ -60,8 +60,12 @@ impl System for MovementSystem {
                 let x = x_axis * movement.speed * delta_time;
                 let y = y_axis * movement.speed * delta_time;
 
-                rigidbody.vel.smooth_damp(rigidbody.vel, Vector2::new(x, y), 0.05, delta_time);
+                rigidbody.vel.smooth_damp(rigidbody.vel, Vector2::new(x, y), 0.03, delta_time);
             }
         }
+    }
+
+    fn draw(&self, _: &mut Context, _: usize, _: &ComponentManager) -> GameResult {
+        Ok(())
     }
 }

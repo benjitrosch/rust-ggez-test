@@ -1,4 +1,4 @@
-use ggez::Context;
+use ggez::{Context, GameResult};
 
 use crate::{
     system::System,
@@ -53,5 +53,9 @@ impl System for PhysicsSystem {
                 transform_ref.pos = new_position;
             }
         }
+    }
+
+    fn draw(&self, _: &mut Context, _: usize, _: &ComponentManager) -> GameResult {
+        Ok(())
     }
 }

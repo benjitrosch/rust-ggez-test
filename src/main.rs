@@ -7,11 +7,14 @@ mod transform;
 mod rigidbody;
 mod gravity;
 mod movement;
+mod sprite;
 
 use gravity::Gravity;
 use movement::{MovementSystem, Movement};
 use physics::PhysicsSystem;
+use rand::{thread_rng, Rng};
 use rigidbody::Rigidbody;
+use sprite::{Sprite, RenderSystem};
 use system::SystemManager;
 use component::ComponentManager;
 use ggez::{
@@ -22,9 +25,10 @@ use ggez::{
     GameResult,
     Context,
     ContextBuilder,
-    event, mint::Vector2,
+    event,
 };
 use transform::Transform;
+use vector2::Vector2;
 
 struct State {
     system_manager: SystemManager,
@@ -32,7 +36,7 @@ struct State {
 }
 
 impl State {
-    fn new() -> Self {
+    fn new(ctx: &Context) -> Self {
         let mut s = Self {
             system_manager: SystemManager::new(),
             component_manager: ComponentManager::new(),
@@ -40,18 +44,37 @@ impl State {
 
         s.system_manager.register_system::<PhysicsSystem>();
         s.system_manager.register_system::<MovementSystem>();
+        s.system_manager.register_system::<RenderSystem>();
 
         s.system_manager.entity_system.create_entity();
 
         let transform = Transform::default();
         let rigidbody = Rigidbody::default();
         let gravity = Gravity(0.0);
-        let movement = Movement { speed: 256.0 };
+        let movement = Movement { speed: 512.0 };
+        let sprite = Sprite::default();
 
         s.component_manager.add_component::<Transform>(0, transform);
         s.component_manager.add_component::<Rigidbody>(0, rigidbody);
         s.component_manager.add_component::<Gravity>(0, gravity);
         s.component_manager.add_component::<Movement>(0, movement);
+        s.component_manager.add_component::<Sprite>(0, sprite);
+
+        let (screen_w, screen_h) = graphics::drawable_size(ctx);
+
+        for e in 1..15 {
+            s.system_manager.entity_system.create_entity();
+
+            let mut rng = thread_rng();
+            let x: f32 = rng.gen_range(0.0..screen_w);
+            let y: f32 = rng.gen_range(0.0..screen_h);
+
+            let transform = Transform { pos: Vector2 { x, y } };
+            let sprite = Sprite::default();
+    
+            s.component_manager.add_component::<Transform>(e, transform);
+            s.component_manager.add_component::<Sprite>(e, sprite);
+        }
 
         s
     }
@@ -66,26 +89,14 @@ impl ggez::event::EventHandler<GameError> for State {
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
         graphics::clear(ctx, Color::BLACK);
 
-        let rect = graphics::Rect::new(0.0, 0.0, 32.0, 32.0);
-        let rect_mesh = graphics::Mesh::new_rectangle(ctx, graphics::DrawMode::fill(), rect, Color::WHITE)?;
+        self.system_manager.draw(ctx, &self.component_manager)?;
 
-        let player_position = self.component_manager.get_components::<Transform>().unwrap().get_entity_component(0).unwrap().pos;
-        let pos = Vector2 {
-            x: player_position.x,
-            y: player_position.y
-        };
-        let draw_params = graphics::DrawParam::new()
-            .dest(pos);
-
-        graphics::draw(ctx, &rect_mesh, draw_params)?;
         graphics::present(ctx)?;
         Ok(())
     }
 }
 
 fn main() {
-    let state = State::new();
-
     let mut c = conf::Conf::new();
 
     c.window_mode.width = 1920.0;
@@ -96,6 +107,8 @@ fn main() {
         .default_conf(c)
         .build()
         .unwrap();
+
+    let state = State::new(&ctx);
 
     event::run(ctx, event_loop, state);
 }
