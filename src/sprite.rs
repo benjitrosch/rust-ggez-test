@@ -7,16 +7,16 @@ use crate::{
 
 #[derive(Copy, Clone)]
 pub struct Sprite {
-    pub width: u8,
-    pub height: u8,
+    pub w: u8,
+    pub h: u8,
     pub color: graphics::Color,
 }
 
 impl Default for Sprite {
     fn default() -> Self {
       Self {
-        width: 32,
-        height: 32,
+        w: 32,
+        h: 32,
         color: Color::WHITE,
       }    
     }  
@@ -47,8 +47,8 @@ impl System for RenderSystem {
                 let rect = graphics::Rect::new(
                     0.0,
                     0.0,
-                    sprite.width as f32,
-                    sprite.height as f32
+                    sprite.w as f32,
+                    sprite.h as f32
                 );
                 let rect_mesh = graphics::Mesh::new_rectangle(
                     ctx,
@@ -59,8 +59,8 @@ impl System for RenderSystem {
 
                 let player_position = component_manager.get_components::<Transform>().unwrap().get_entity_component(entity).unwrap().pos;
                 let pos = Vector2 {
-                    x: player_position.x - sprite.width as f32 * 0.5,
-                    y: player_position.y - sprite.height as f32 * 0.5
+                    x: player_position.x - sprite.w as f32 * 0.5,
+                    y: player_position.y - sprite.h as f32 * 0.5
                 };
                 let draw_params = graphics::DrawParam::new()
                     .dest(pos);

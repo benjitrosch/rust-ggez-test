@@ -30,7 +30,7 @@ impl SystemManager {
     }
   }
 
-  pub fn register_system<T: 'static>(&mut self) where T: Default + System {
+  pub fn register_system<T: 'static>(&mut self) where T: System + Default {
     let system = T::default();
     self.systems.insert(TypeId::of::<T>(), Box::new(system));
   }

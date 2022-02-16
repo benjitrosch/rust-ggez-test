@@ -8,6 +8,7 @@ use std::{
   
 pub trait Component {}
 
+#[derive(Clone)]
 pub struct ComponentList<T> {
     pub components: Vec<T>,
     pub entity_map: HashMap<usize, usize>
@@ -87,13 +88,13 @@ impl ComponentManager {
         }
     }
 
-    pub fn add_component<T: 'static>(&mut self, entity: usize, component: T) where T : Component {
+    pub fn add_component<T: 'static>(&mut self, entity: usize) where T : Component + Default {
         let component_lists = self.get_components_mut::<T>();
         match component_lists {
-            Some(c) => c.add_component(entity, component),
+            Some(c) => c.add_component(entity, T::default()),
             None => {
                 self.register_components::<T>();
-                self.add_component::<T>(entity, component);
+                self.add_component::<T>(entity);
             }
         }
     }

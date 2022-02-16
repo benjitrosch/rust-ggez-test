@@ -11,6 +11,14 @@ pub struct Movement {
     pub speed: f32,
 }
 
+impl Default for Movement {
+    fn default() -> Self {
+        Self {
+          speed: 512.0
+        }    
+    }  
+}
+
 impl Component for Movement {}
   
 pub struct MovementSystem {}
