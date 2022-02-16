@@ -6,9 +6,7 @@ use std::{
     },
 };
   
-pub trait Component {
-    fn print(&self);
-}
+pub trait Component {}
 
 pub struct ComponentList<T> {
     pub components: Vec<T>,
@@ -43,18 +41,6 @@ impl<T: Component + 'static> ComponentList<T> {
             Some(i) => Some(&mut self.components[*i]),
             None => None
         }
-    }
-
-    pub fn print_all_components(&self) {
-        println!("-- COMPONENT {:?} --", std::any::TypeId::of::<T>());
-
-        for (entity, index) in &self.entity_map {
-            println!("entity {}: ", entity);
-            let component = &self.components[*index];
-            component.print();
-        }
-
-        println!("\n");
     }
 }
 

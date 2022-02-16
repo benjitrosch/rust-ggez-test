@@ -3,23 +3,16 @@ use ggez::{Context, input::keyboard, event::KeyCode};
 use crate::{
     system::System,
     component::{ComponentManager, Component},
-    rigidbody::Rigidbody,
+    rigidbody::Rigidbody, vector2::Vector2,
 };
 
 #[derive(Copy, Clone)]
 pub struct Movement {
-    pub speed: f64,
+    pub speed: f32,
 }
 
-impl Component for Movement {
-    fn print(&self) {
-        println!(
-            "",
-        );
-    }
-}
+impl Component for Movement {}
   
-
 pub struct MovementSystem {}
 
 impl Default for MovementSystem {
@@ -37,31 +30,37 @@ impl System for MovementSystem {
             if has_rigidbody_component && has_movement_component {
                 let movement_list = component_manager.get_components::<Movement>().unwrap();
                 let movement = *movement_list.get_entity_component(entity).unwrap();
-                
+
                 let rigidbody_list = component_manager.get_components_mut::<Rigidbody>().unwrap();
                 let rigidbody = rigidbody_list.get_entity_component_mut(entity).unwrap();
 
-                let delta_time = ggez::timer::delta(ctx).as_secs_f64();
+                let mut x_axis = 0.0;
+                let mut y_axis = 0.0;
 
-                rigidbody.vel.y = if keyboard::is_key_pressed(ctx, KeyCode::W) {
-                    -movement.speed * delta_time
-                }
-                else if keyboard::is_key_pressed(ctx, KeyCode::S) {
-                    movement.speed * delta_time
-                }
-                else {
-                    0.0
-                };
+                let pressed_left = keyboard::is_key_pressed(ctx, KeyCode::A) || keyboard::is_key_pressed(ctx, KeyCode::Left);
+                let pressed_right = keyboard::is_key_pressed(ctx, KeyCode::D) || keyboard::is_key_pressed(ctx, KeyCode::Right);
+                let pressed_up = keyboard::is_key_pressed(ctx, KeyCode::W) || keyboard::is_key_pressed(ctx, KeyCode::Up);
+                let pressed_down = keyboard::is_key_pressed(ctx, KeyCode::S) || keyboard::is_key_pressed(ctx, KeyCode::Down);
 
-                rigidbody.vel.x = if keyboard::is_key_pressed(ctx, KeyCode::A) {
-                    -movement.speed * delta_time
+                if pressed_left {
+                    x_axis += -1.0;
                 }
-                else if keyboard::is_key_pressed(ctx, KeyCode::D) {
-                    movement.speed * delta_time
+                if pressed_right {
+                    x_axis += 1.0;
                 }
-                else {
-                    0.0
-                };
+                if pressed_up {
+                    y_axis += -1.0;
+                }
+                if pressed_down {
+                    y_axis += 1.0;
+                }
+
+                let delta_time = ggez::timer::delta(ctx).as_secs_f32();
+
+                let x = x_axis * movement.speed * delta_time;
+                let y = y_axis * movement.speed * delta_time;
+
+                rigidbody.vel.smooth_damp(rigidbody.vel, Vector2::new(x, y), 0.05, delta_time);
             }
         }
     }

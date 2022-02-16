@@ -14,13 +14,5 @@ impl Default for Rigidbody {
     }  
   }
 
-impl Component for Rigidbody {
-    fn print(&self) {
-        println!(
-          "vel: ({:.2}, {:.2})",
-          self.vel.x,
-          self.vel.y
-        );
-    }
-}
+impl Component for Rigidbody {}
   

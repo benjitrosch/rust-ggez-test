@@ -71,8 +71,8 @@ impl ggez::event::EventHandler<GameError> for State {
 
         let player_position = self.component_manager.get_components::<Transform>().unwrap().get_entity_component(0).unwrap().pos;
         let pos = Vector2 {
-            x: player_position.x as f32,
-            y: player_position.y as f32
+            x: player_position.x,
+            y: player_position.y
         };
         let draw_params = graphics::DrawParam::new()
             .dest(pos);

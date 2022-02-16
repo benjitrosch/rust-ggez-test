@@ -14,12 +14,4 @@ impl Default for Transform {
   }  
 }
 
-impl Component for Transform {
-  fn print(&self) {
-    println!(
-      "pos: ({:.2}, {:.2})",
-      self.pos.x,
-      self.pos.y,
-    );
-  }
-}
+impl Component for Transform {}
