@@ -59,8 +59,8 @@ impl System for RenderSystem {
 
                 let player_position = component_manager.get_components::<Transform>().unwrap().get_entity_component(entity).unwrap().pos;
                 let pos = Vector2 {
-                    x: player_position.x,
-                    y: player_position.y
+                    x: player_position.x - sprite.width as f32 * 0.5,
+                    y: player_position.y - sprite.height as f32 * 0.5
                 };
                 let draw_params = graphics::DrawParam::new()
                     .dest(pos);

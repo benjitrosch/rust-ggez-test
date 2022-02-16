@@ -12,6 +12,37 @@ impl Vector2 {
     Self { x, y }
   }
 
+  pub fn clamp(&mut self, min: Vector2, max: Vector2) -> Self {
+    let x = if self.x < min.x {
+      min.x
+    }
+    else if self.x > max.x {
+      max.x
+    }
+    else {
+      self.x
+    };
+
+    let y = if self.y < min.y {
+      min.y
+    }
+    else if self.y > max.y {
+      max.y
+    }
+    else {
+      self.y
+    };
+
+    let s = Self {
+      x,
+      y
+    };
+
+    self.x = s.x;
+    self.y = s.y;
+    s
+  }
+
   pub fn lerp(&mut self, a: Vector2, b: Vector2, t: f32) -> Self {
     let x = a.x * (1.0 - t) + b.x * t;
     let y = a.y * (1.0 - t) + b.y * t;

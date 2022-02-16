@@ -1,4 +1,4 @@
-use ggez::{Context, GameResult};
+use ggez::{Context, GameResult, graphics};
 
 use crate::{
     system::System,
@@ -18,7 +18,7 @@ impl Default for PhysicsSystem {
 }
 
 impl System for PhysicsSystem {
-    fn update(&mut self, _: &mut Context, entities: usize, component_manager: &mut ComponentManager) {
+    fn update(&mut self, ctx: &mut Context, entities: usize, component_manager: &mut ComponentManager) {
         for entity in 0..entities {
             let has_transform_component = component_manager.entity_has_component::<Transform>(entity);
             let has_rigidbody_component = component_manager.entity_has_component::<Rigidbody>(entity);
@@ -39,9 +39,14 @@ impl System for PhysicsSystem {
                     rigidbody.vel.y - gravity.0,
                 );
 
+                let (screen_w, screen_h) = graphics::drawable_size(ctx);
+
                 let new_position = Vector2::new(
                     transform.pos.x + rigidbody.vel.x,
                     transform.pos.y + rigidbody.vel.y
+                ).clamp(
+                    Vector2::default(), 
+                    Vector2::new(screen_w, screen_h)
                 );
 
                 let rigidbody_list_mut = component_manager.get_components_mut::<Rigidbody>().unwrap();
